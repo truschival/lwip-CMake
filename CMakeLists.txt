@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1.3)
+cmake_minimum_required (VERSION 3.3.0)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_COLOR_MAKEFILE ON)
@@ -19,10 +19,25 @@ set(PROJECT_VERSION  ${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 message(STATUS "")
 message(STATUS "Running ${CMAKE_COMMAND} ${CMAKE_VERSION} on ${CMAKE_PROJECT_NAME} v${PROJECT_VERSION}" )
 
+
+#-------------------------------------------------------------------------------
+# User Options
+#-------------------------------------------------------------------------------
+
 # User did not provide install prefix via cmake commandline
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-  SET(CMAKE_INSTALL_PREFIX ${STAGING_DIR} CACHE PATH "Installation Directory" FORCE)
+  SET(CMAKE_INSTALL_PREFIX ${STAGING_DIR}
+	CACHE PATH "Installation Directory" FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+
+# Default to use with RTOS
+SET(LWIP_COMPILE_DEFINITIONS "LWIP_PROVIDE_ERRNO;NO_SYS=0;RTOS_FREERTOS=1")
+
+if(WITH_TCP)
+  LIST(APPEND LWIP_COMPILE_DEFINITIONS "LWIP_TCP=1;LWIP_NETCONN=1")
+endif(WITH_TCP)
+
 
 #-------------------------------------------------------------------------------
 # Print Summary
@@ -39,8 +54,9 @@ message(STATUS "" )
 #-------------------------------------------------------------------------------
 # This project has no include / src directory separation
 SET(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${PROJECT_INCLUDE_DIR})
 
+# Find other configuration options in lwipopts.h
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 #-------------------------------------------------------------------------------
 # Output  configuration

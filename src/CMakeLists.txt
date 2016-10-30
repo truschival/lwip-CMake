@@ -1,8 +1,7 @@
 MESSAGE(STATUS "\n Checking ${CMAKE_CURRENT_SOURCE_DIR}")
 
-# lwip configured with TCP+ipv4+sockets+ports
- Here the component/package will be called TivaWare (see project)
-SET(COMPONENT_NAME "tcpip4")
+# lwip configured with TCP+ipv4+sockets+TexasInstruments lwiplib
+SET(COMPONENT_NAME "lwip")
 string(TOLOWER ${COMPONENT_NAME} LIBRARY_NAME)
 
 # For now same version as the whole project
@@ -15,14 +14,19 @@ set(targets_export_name "${COMPONENT_NAME}Targets")
 set(namespace "${PROJECT_NAMESPACE}")
 
 
-SET(LWIP_COMPILE_DEFINITIONS "LWIP_PROVIDE_ERRNO" "RTOS_FREERTOS=1") 
-
 #------------------------------
 # Dependencies
 #------------------------------
 
 # No dependencies so far
 SET(MODULE_DEPS "")
+
+find_package(TivaWare COMPONENTS driverlib TivaHeaders CONFIG REQUIRED)
+LIST(APPEND MODULE_DEPS TivaWare::driverlib )
+
+find_package(FreeRTOS CONFIG REQUIRED)
+LIST(APPEND MODULE_DEPS freertos)
+
 
 #------------------------------
 # normal sources
@@ -64,12 +68,14 @@ set(SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/core/ipv4/ip.c
   ${CMAKE_CURRENT_SOURCE_DIR}/core/ipv4/inet_chksum.c
   ${CMAKE_CURRENT_SOURCE_DIR}/core/ipv4/igmp.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/# netif (only ARP)
+  # netif (only ARP)
   ${CMAKE_CURRENT_SOURCE_DIR}/netif/etharp.c
   # TivaWare port
   ${CMAKE_CURRENT_SOURCE_DIR}/tiva-tm4c129/perf.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tiva-tm4c129/sys_arch.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tiva-tm4c129/tiva-tm4c129.c
+  # lwiplib
+  ${CMAKE_CURRENT_SOURCE_DIR}/lwiplib/lwiplib.c
   )
 
 
@@ -79,10 +85,12 @@ set(SRCS
 ADD_LIBRARY(${LIBRARY_NAME} ${SRCS})
 
 
+MESSAGE(STATUS ${LWIP_COMPILE_DEFINITIONS})
+
 SET_TARGET_PROPERTIES(
   ${LIBRARY_NAME} PROPERTIES
-  COMPILE_DEFINITIONS ${LWIP_COMPILE_DEFINITIONS}
-  COMPILE_FLAGS "-Wno-unused-parameter"
+  COMPILE_DEFINITIONS "${LWIP_COMPILE_DEFINITIONS}"
+  COMPILE_FLAGS "-Wno-unused-parameter -Wno-empty-body"
   OUTPUT_NAME ${LIBRARY_NAME}
   VERSION ${LIBRARY_VERSION}
   SOVERSION ${LIBRARY_VERSION}
@@ -93,10 +101,10 @@ target_include_directories(
   ${LIBRARY_NAME}
   PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/${LIBRARY_NAME}>
+  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/arch>
+  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/ipv4>
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>
-  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/${LIBRARY_NAME}>
   )
 
 # Add dependencies to library to pass
@@ -155,8 +163,3 @@ INSTALL(
   COMPONENT DEVELOP
   DESTINATION "${INSTALL_CMAKE_DIR}/${namespace}"
   )
-
-# lwiplib (Texas Instruments Helper library)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lwiplib/)
-
-

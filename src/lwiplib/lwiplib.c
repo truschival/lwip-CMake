@@ -29,7 +29,10 @@
 //*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
-#include "utils/lwiplib.h"
+#include "lwiplib/lwiplib.h"
+#include "inc/hw_emac.h"
+
+#include "netif/tivaif.h"
 
 //*****************************************************************************
 //
@@ -40,117 +43,6 @@
 #ifndef LWIP_OFFLOAD_ICMP_CHKSUM
 #define LWIP_OFFLOAD_ICMP_CHKSUM 1
 #endif
-
-//*****************************************************************************
-//
-// Include lwIP high-level API code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/api/api_lib.c"
-//#include "lwip-1.4.1/src/api/api_msg.c"
-//#include "lwip-1.4.1/src/api/err.c"
-//#include "lwip-1.4.1/src/api/netbuf.c"
-//#include "lwip-1.4.1/src/api/netdb.c"
-//#include "lwip-1.4.1/src/api/netifapi.c"
-//#include "lwip-1.4.1/src/api/sockets.c"
-//#include "lwip-1.4.1/src/api/tcpip.c"
-
-//*****************************************************************************
-//
-// Include the core lwIP TCP/IP stack code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/core/def.c"
-//#include "lwip-1.4.1/src/core/dhcp.c"
-//#include "lwip-1.4.1/src/core/dns.c"
-//#include "lwip-1.4.1/src/core/init.c"
-//#include "lwip-1.4.1/src/core/mem.c"
-//#include "lwip-1.4.1/src/core/memp.c"
-//#include "lwip-1.4.1/src/core/netif.c"
-//#include "lwip-1.4.1/src/core/pbuf.c"
-//#include "lwip-1.4.1/src/core/raw.c"
-//#include "lwip-1.4.1/src/core/stats.c"
-//#include "lwip-1.4.1/src/core/sys.c"
-//#include "lwip-1.4.1/src/core/tcp.c"
-//#include "lwip-1.4.1/src/core/tcp_in.c"
-//#include "lwip-1.4.1/src/core/tcp_out.c"
-//#include "lwip-1.4.1/src/core/timers.c"
-//#include "lwip-1.4.1/src/core/udp.c"
-
-//*****************************************************************************
-//
-// Include the IPV4 code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/core/ipv4/autoip.c"
-//#include "lwip-1.4.1/src/core/ipv4/icmp.c"
-//#include "lwip-1.4.1/src/core/ipv4/igmp.c"
-//#include "lwip-1.4.1/src/core/ipv4/inet.c"
-//#include "lwip-1.4.1/src/core/ipv4/inet_chksum.c"
-//#include "lwip-1.4.1/src/core/ipv4/ip.c"
-//#include "lwip-1.4.1/src/core/ipv4/ip_addr.c"
-//#include "lwip-1.4.1/src/core/ipv4/ip_frag.c"
-
-//*****************************************************************************
-//
-// Include the IPV6 code.
-// Note:  Code is experimental and not ready for use.
-// References are included for completeness.
-//
-//*****************************************************************************
-#if 0
-//#include "lwip-1.4.1/src/core/ipv6/icmp6.c"
-//#include "lwip-1.4.1/src/core/ipv6/inet6.c"
-//#include "lwip-1.4.1/src/core/ipv6/ip6.c"
-//#include "lwip-1.4.1/src/core/ipv6/ip6_addr.c"
-#endif
-
-//*****************************************************************************
-//
-// Include the lwIP SNMP code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/core/snmp/asn1_dec.c"
-//#include "lwip-1.4.1/src/core/snmp/asn1_enc.c"
-//#include "lwip-1.4.1/src/core/snmp/mib2.c"
-//#include "lwip-1.4.1/src/core/snmp/mib_structs.c"
-//#include "lwip-1.4.1/src/core/snmp/msg_in.c"
-//#include "lwip-1.4.1/src/core/snmp/msg_out.c"
-
-//*****************************************************************************
-//
-// Include the network interface code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/netif/etharp.c"
-
-//*****************************************************************************
-//
-// Include the network interface PPP code.
-//
-//*****************************************************************************
-//#include "lwip-1.4.1/src/netif/ppp/auth.c"
-//#include "lwip-1.4.1/src/netif/ppp/chap.c"
-//#include "lwip-1.4.1/src/netif/ppp/chpms.c"
-//#include "lwip-1.4.1/src/netif/ppp/fsm.c"
-//#include "lwip-1.4.1/src/netif/ppp/ipcp.c"
-//#include "lwip-1.4.1/src/netif/ppp/lcp.c"
-//#include "lwip-1.4.1/src/netif/ppp/magic.c"
-//#include "lwip-1.4.1/src/netif/ppp/md5.c"
-//#include "lwip-1.4.1/src/netif/ppp/pap.c"
-//#include "lwip-1.4.1/src/netif/ppp/ppp.c"
-//#include "lwip-1.4.1/src/netif/ppp/ppp_oe.c"
-//#include "lwip-1.4.1/src/netif/ppp/randm.c"
-//#include "lwip-1.4.1/src/netif/ppp/vj.c"
-
-//*****************************************************************************
-//
-// Include Tiva-specific lwIP interface/porting layer code.
-//
-//*****************************************************************************
-#include "lwip-1.4.1/ports/tiva-tm4c129/perf.c"
-#include "lwip-1.4.1/ports/tiva-tm4c129/sys_arch.c"
-#include "lwip-1.4.1/ports/tiva-tm4c129/netif/tiva-tm4c129.c"
 
 //*****************************************************************************
 //
@@ -438,6 +330,10 @@ lwIPInterruptTask(void *pvArg)
 //
 //*****************************************************************************
 #if LWIP_AUTOIP || LWIP_DHCP
+
+#include "lwip/autoip.h"
+#include "lwip/dhcp.h"
+
 static void
 lwIPLinkDetect(void)
 {
