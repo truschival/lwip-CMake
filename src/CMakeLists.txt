@@ -21,12 +21,11 @@ set(namespace "${PROJECT_NAMESPACE}")
 # No dependencies so far
 SET(MODULE_DEPS "")
 
-find_package(TivaWare COMPONENTS driverlib TivaHeaders CONFIG REQUIRED)
+find_package(TivaWare COMPONENTS TivaHeaders driverlib CONFIG REQUIRED)
 LIST(APPEND MODULE_DEPS TivaWare::driverlib )
 
 find_package(FreeRTOS CONFIG REQUIRED)
 LIST(APPEND MODULE_DEPS freertos)
-
 
 #------------------------------
 # normal sources
@@ -101,10 +100,12 @@ target_include_directories(
   ${LIBRARY_NAME}
   PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/>
   $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/arch>
   $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}/ipv4>
-  PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>
+  INTERFACE
+  $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}/${namespace}/>
+  $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}/${namespace}/ipv4>
   )
 
 # Add dependencies to library to pass
@@ -140,15 +141,21 @@ INSTALL(TARGETS ${LIBRARY_NAME}
   RUNTIME DESTINATION ${INSTALL_BIN_DIR}
   # this will only add -I<prefix>/include to client compile flags
   # The users of the library have to #include "driverlib/foo.h"
-  INCLUDES DESTINATION ${INSTALL_INCLUDE_DIR}
+  INCLUDES DESTINATION ${INSTALL_INCLUDE_DIR}/${namespace}
 )
 
 
 # Core headers
 INSTALL(DIRECTORY
-  ${PROJECT_INCLUDE_DIR}/${LIBRARY_NAME}
+  ${PROJECT_INCLUDE_DIR}/
   COMPONENT DEVELOP
-  DESTINATION ${INSTALL_INCLUDE_DIR}
+  DESTINATION ${INSTALL_INCLUDE_DIR}/${namespace}
+  )
+
+INSTALL(FILES
+  ${PROJECT_SOURCE_DIR}/lwipopts.h
+  COMPONENT DEVELOP
+  DESTINATION ${INSTALL_INCLUDE_DIR}/${namespace}
   )
 
 INSTALL(
