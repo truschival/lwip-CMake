@@ -21,7 +21,7 @@ set(namespace "${PROJECT_NAMESPACE}")
 # No dependencies so far
 SET(MODULE_DEPS "")
 
-find_package(TivaWare COMPONENTS TivaHeaders driverlib CONFIG REQUIRED)
+find_package(TivaWare COMPONENTS driverlib CONFIG REQUIRED)
 LIST(APPEND MODULE_DEPS TivaWare::driverlib )
 
 find_package(FreeRTOS CONFIG REQUIRED)
